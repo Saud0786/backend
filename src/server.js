@@ -13,10 +13,24 @@ dotenv.config();
 const app =express();
 const PORT =process.env.PORT;
 
+const allowedOrigins = [
+  'https://chatapplication-frontend-xesc.onrender.com',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin:'https://chatapplication-frontend-xesc.onrender.com',
-  credentials: true
-}))
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'CORS policy: This origin is not allowed.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+}));
+
 
 app.use(express.json());
 app.use(cookieParser());  
